@@ -1,22 +1,31 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
+const dotenv = require("dotenv");
 // const schema = require("./schema/schema");
 
 const app = express();
+dotenv.config();
 
 // endpoint
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: buildSchema(`
+      type Event {
+        _id: ID!
+        title: String!
+        description: String!
+        Price: Float!
+        date: String!
+      }
+
       type RootQuery {
         events: [String!]!
       }
 
       type RootMutations {
         createEvent(name: String!): String
-
       }
 
       schema {

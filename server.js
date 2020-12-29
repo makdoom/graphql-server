@@ -5,6 +5,8 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 // const schema = require("./schema/schema");
 
+const Event = require("./model/EventModel");
+
 const app = express();
 dotenv.config();
 
@@ -61,20 +63,36 @@ app.use(
     `),
     rootValue: {
       events: () => {
-        return events;
+        return Event.find({})
+          .then((events) => {
+            return events.map((event) => {
+              return { ...event._doc };
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            throw error;
+          });
       },
 
       createEvent: (args) => {
-        const event = {
-          _id: Math.random().toString(),
+        const event = new Event({
           title: args.eventInput.title,
           description: args.eventInput.description,
           price: args.eventInput.price,
-          date: args.eventInput.date,
-        };
+          date: new Date(args.eventInput.date),
+        });
 
-        events.push(event);
-        return event;
+        return event
+          .save()
+          .then((result) => {
+            console.log(result);
+            return { ...result._doc };
+          })
+          .catch((error) => {
+            console.log(error);
+            throw error;
+          });
       },
     },
     graphiql: true,

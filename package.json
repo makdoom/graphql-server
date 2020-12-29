@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "GraphQL Event Booking App",
   "main": "server.js",
-  "type": "module",
   "scripts": {
     "server": "nodemon server.js"
   },

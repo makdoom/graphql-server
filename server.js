@@ -1,7 +1,7 @@
-import express from "express";
-import { graphqlHTTP } from "express-graphql";
-import mongoose from "mongoose";
-import schema from "./schema/schema.js";
+const express = require("express");
+const { graphqlHTTP } = require("express-graphql");
+const { buildSchema } = require("graphql");
+// const schema = require("./schema/schema");
 
 const app = express();
 
@@ -9,7 +9,31 @@ const app = express();
 app.use(
   "/graphql",
   graphqlHTTP({
-    schema,
+    schema: buildSchema(`
+      type RootQuery {
+        events: [String!]!
+      }
+
+      type RootMutations {
+        createEvent(name: String!): String
+
+      }
+
+      schema {
+        query: RootQuery
+        mutation: RootMutations
+      }
+    `),
+    rootValue: {
+      events: () => {
+        return ["Makdoom", "Mahek", "Ahad"];
+      },
+
+      createEvent: (args) => {
+        const eventName = args.name;
+        return eventName;
+      },
+    },
     graphiql: true,
   })
 );

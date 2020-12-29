@@ -1,0 +1,21 @@
+{
+  "name": "graphql-event-booking",
+  "version": "1.0.0",
+  "description": "GraphQL Event Booking App",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "server": "nodemon server.js"
+  },
+  "author": "Makdoom Shaikh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-graphql": "^0.12.0",
+    "graphql": "^15.4.0",
+    "mongoose": "^5.11.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}

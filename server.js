@@ -2,12 +2,29 @@ const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema, createSourceEventStream } = require("graphql");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 // const schema = require("./schema/schema");
 
 const app = express();
 dotenv.config();
 
-const events = [];
+const port = process.env.PORT || 5000;
+
+// Database config
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+  })
+  .then(() => {
+    app.listen(port, () =>
+      console.log(`Connected to database and running at ${port}`)
+    );
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
 // Single endpoint
 app.use(
@@ -63,6 +80,3 @@ app.use(
     graphiql: true,
   })
 );
-
-const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`Server up & running at ${port}`));

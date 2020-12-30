@@ -94,13 +94,22 @@ app.use(
           description: args.eventInput.description,
           price: args.eventInput.price,
           date: new Date(args.eventInput.date),
+          creator: "5fec30177e2cbe0308293fab",
         });
-
+        let createdEvent;
         return event
           .save()
           .then((result) => {
-            console.log(result);
-            return { ...result._doc };
+            createdEvent = { ...result._doc };
+            return User.findById("5fec30177e2cbe0308293fab");
+          })
+          .then((user) => {
+            if (!user) throw new Error("User not found");
+            user.createdEvents.push(event);
+            return user.save();
+          })
+          .then((result) => {
+            return createdEvent;
           })
           .catch((error) => {
             console.log(error);
@@ -109,8 +118,11 @@ app.use(
       },
 
       createUser: (args) => {
-        return bcrypt
-          .hash(args.userInput.password, 12)
+        return User.findOne({ email: args.userInput.email })
+          .then((user) => {
+            if (user) throw new Error("User already exists");
+            return bcrypt.hash(args.userInput.password, 12);
+          })
           .then((hashedPassword) => {
             const user = new User({
               email: args.userInput.email,

@@ -1,11 +1,12 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const { buildSchema, createSourceEventStream } = require("graphql");
+const { buildSchema } = require("graphql");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-// const schema = require("./schema/schema");
+const bcrypt = require("bcryptjs");
 
 const Event = require("./model/EventModel");
+const User = require("./model/UserModel");
 
 const app = express();
 dotenv.config();
@@ -41,11 +42,22 @@ app.use(
         date: String!
       }
 
+      type User {
+        _id: ID!
+        email: String!
+        password: String
+      }
+
       input EventInput {
         title: String!
         description: String!
         price: Float!
         date: String!
+      }
+
+      input UserInput {
+         email: String!
+        password: String!
       }
 
       type RootQuery {
@@ -54,6 +66,7 @@ app.use(
 
       type RootMutations {
         createEvent(eventInput: EventInput): Event
+        createUser(userInput: UserInput): User
       }
 
       schema {
@@ -91,6 +104,24 @@ app.use(
           })
           .catch((error) => {
             console.log(error);
+            throw error;
+          });
+      },
+
+      createUser: (args) => {
+        return bcrypt
+          .hash(args.userInput.password, 12)
+          .then((hashedPassword) => {
+            const user = new User({
+              email: args.userInput.email,
+              password: hashedPassword,
+            });
+            return user.save();
+          })
+          .then((result) => {
+            return { ...result._doc, password: null };
+          })
+          .catch((error) => {
             throw error;
           });
       },

@@ -1,6 +1,7 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const dotenv = require("dotenv");
+const cors = require("cors");
 
 const graphQlSchema = require("./graphql/schema/index");
 const graphQlResolvers = require("./graphql/resolvers/index");
@@ -8,6 +9,7 @@ const databaseConnection = require("./dbConfig");
 const isAuth = require("./middleware/is-auth");
 
 const app = express();
+app.use(cors());
 dotenv.config();
 
 // Port Conf
